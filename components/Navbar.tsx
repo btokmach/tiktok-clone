@@ -7,10 +7,13 @@ import { AiOutlineLogout } from "react-icons/ai";
 import { BiSearch } from "react-icons/bi";
 import { IoMdAdd } from "react-icons/io";
 
+import { createOrGetUser } from "../utils";
+import useAuthStore from "../store/authStore";
+
 import Logo from "../utils/tiktik-logo.png";
 
 const Navbar = () => {
-  const user = false;
+  const { userProfile, addUser, removeUser} = useAuthStore();
 
 
   return (
@@ -29,11 +32,41 @@ const Navbar = () => {
       <div>SEARCH</div>
 
       <div>
-        {user ? (
-          <div>Logged In</div>
+        {userProfile ? (
+          <div className="flex gap-5 md:gap-10">
+            <Link href="/upload">
+              <button className="border-2 px-2 md:px-4 text-md font-semibold flex items-center gap-2">
+                <IoMdAdd className="text-xl" /> {` `}
+                <span className="hidden md:block">Upload</span>
+              </button>
+            </Link>
+            {userProfile.image && (
+              <Link href="/">
+                <>
+                  <Image
+                    width={40}
+                    height={40}
+                    className="rounded-full cursor-pointer"
+                    src={userProfile.image}
+                    alt="profile photo"
+                  />
+                </>
+              </Link>
+            )}
+            <button
+              type="button"
+              className="px-2"
+              onClick={() => {
+                googleLogout();
+                removeUser();
+              }}
+            >
+              <AiOutlineLogout color="red" fontSize={21} />
+            </button>
+          </div>
         ) : (
           <GoogleLogin
-            onSuccess={(response) => console.log(response)}
+            onSuccess={(response) => createOrGetUser(response, addUser)}
             onError={() => console.log('Error')}
           />
         )}
