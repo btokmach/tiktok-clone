@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { MdFavorite } from 'react-icons/md';
+import { NextPage } from 'next';
 
 import useAuthStore from '../store/authStore';
 
 interface IProps {
+  likes: any[];
+  flex: string;
   handleLike: () => void;
   handleDislike: () => void;
-  likes: any[];
 }
 
-const LikeButton = ({ likes, handleLike, handleDislike }: IProps) => {
+const LikeButton: NextPage<IProps> = ({ likes, flex, handleLike, handleDislike }: IProps) => {
   const [alreadyLiked, setAlreadyLiked] = useState(false);
   const { userProfile }: any = useAuthStore();
-  const filterLikes = likes?.filter((item) => item._ref === userProfile?._id)
+  let filterLikes = likes?.filter((item) => item._ref === userProfile?._id)
 
   useEffect(() => {
     if(filterLikes?.length > 0) {
@@ -20,10 +22,10 @@ const LikeButton = ({ likes, handleLike, handleDislike }: IProps) => {
     } else {
       setAlreadyLiked(false);
     }
-  }, [filterLikes, likes])
+  }, [filterLikes, likes]);
 
   return (
-    <div className="flex gap-6">
+    <div className={`${flex} gap-6`}>
       <div className="mt-4 flex flex-col justify-center items-center cursor-pointer">
         {alreadyLiked ? (
           <div className="bg-primary rounded-full p-2 md:p-4 text-[#F51997]" onClick={handleDislike}>
@@ -34,7 +36,7 @@ const LikeButton = ({ likes, handleLike, handleDislike }: IProps) => {
             <MdFavorite className="text-lg md:text-2xl" />
           </div>
         )}
-        <p className="text-md font-semibold">{likes?.length || 0} </p>
+        <p className="text-md font-semibold">{likes?.length || ''} </p>
       </div>
     </div>
   )

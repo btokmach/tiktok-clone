@@ -7,7 +7,6 @@ import { SanityAssetDocument } from '@sanity/client';
 
 import useAuthStore from '../store/authStore';
 import { client } from '../utils/client';
-
 import { topics } from '../utils/constants';
 import { BASE_URL } from '../utils';
 
@@ -88,7 +87,7 @@ const Upload = () => {
                       src={videoAsset.url}
                       loop
                       controls
-                      className="rounded-xl h-[450px] mt-16 bg-black"
+                      className="rounded-xl h-[450px] bg-black"
                     >
                     </video>
                   </div>
