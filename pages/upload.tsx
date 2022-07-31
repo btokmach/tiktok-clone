@@ -20,6 +20,10 @@ const Upload = () => {
   const { userProfile }: { userProfile: any } = useAuthStore();
   const router = useRouter();
 
+  useEffect(() => {
+    if (!userProfile) router.push('/');
+  }, [userProfile, router]);
+
   const uploadVideo = async (e: any) => {
     const selectedFile = e.target.files[0];
     const fileTypes = ['video/mp4', 'video/webm', 'video/ogg'];
@@ -71,6 +75,7 @@ const Upload = () => {
     setSavingPost(false);
     setVideoAsset(undefined);
     setCaption('');
+    setCategory('');
   };
 
   return (
@@ -78,7 +83,7 @@ const Upload = () => {
       <div className="bg-white rounded-lg xl:h-[80vh] flex gap-6 flex-wrap justify-center items-center p-14 pt-6">
         <div>
           <div>
-            <p className="text-2xl font-bold">Upload Video</p>
+            <p className="text-2xl font-bold">Upload video</p>
             <p className="text-md text-gray-400 mt-1">Post a video to your account</p>
           </div>
           <div className="border-dashed rounded-xl border-4 border-gray-200 flex flex-col justify-center items-center  outline-none mt-10 w-[260px] h-[458px] p-10 cursor-pointer hover:border-red-300 hover:bg-gray-100">
@@ -89,7 +94,7 @@ const Upload = () => {
                 {videoAsset ? (
                   <div>
                     <video
-                      src={videoAsset.url}
+                      src={videoAsset?.url}
                       loop
                       controls
                       className="rounded-xl h-[450px] bg-black"
@@ -120,7 +125,7 @@ const Upload = () => {
                     <input
                       type="file"
                       name="upload-video"
-                      onChange={uploadVideo}
+                      onChange={(e) => uploadVideo(e)}
                       className="w-0 h-0"
                     />
                   </label>
@@ -167,11 +172,12 @@ const Upload = () => {
                 Discard
               </button>
               <button
+                disabled={videoAsset?.url ? false : true}
                 onClick={handlePost}
                 type="button"
                 className="bg-[#F51997] text-white text-md font-medium p-2 rounded w-28 lg:w-44 outline-none"
               >
-                Post
+                {savingPost ? 'Posting...' : 'Post'}
               </button>
             </div>
           </div>
