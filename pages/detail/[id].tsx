@@ -1,21 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
+import { GoVerified } from 'react-icons/go';
 import Image from 'next/image';
 import Link from 'next/link';
-import { GoVerified } from 'react-icons/go';
 import { MdOutlineCancel } from 'react-icons/md';
 import { BsFillPlayFill } from 'react-icons/bs';
 import { HiVolumeUp, HiVolumeOff } from 'react-icons/hi';
+
+import Comments from '../../components/Comments';
+import { BASE_URL } from '../../utils';
+import LikeButton from '../../components/LikeButton';
+import useAuthStore from '../../store/authStore';
+import { Video } from '../../types';
 import axios from 'axios';
 
-import { BASE_URL } from '../../utils';
-import { Video } from '../../types';
-import useAuthStore from '../../store/authStore';
-import LikeButton from '../../components/LikeButton';
-import Comments from '../../components/Comments';
-
 interface IProps {
-  postDetails: Video,
+  postDetails: Video;
 }
 
 const Detail = ({ postDetails }: IProps) => {
