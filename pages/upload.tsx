@@ -10,13 +10,13 @@ import { topics } from '../utils/constants';
 import { BASE_URL } from '../utils';
 
 const Upload = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [caption, setCaption] = useState('');
+  const [topic, setTopic] = useState<String>(topics[0].name);
+  const [loading, setLoading] = useState(false);
+  const [savingPost, setSavingPost] = useState(false);
   const [videoAsset, setVideoAsset] = useState<SanityAssetDocument | undefined>();
   const [wrongFileType, setWrongFileType] = useState(false);
-  const [caption, setCaption] = useState('');
-  const [category, setCategory] = useState(topics[0].name);
-  const [savingPost, setSavingPost] = useState(false);
-
+  
   const { userProfile }: { userProfile: any } = useAuthStore();
   const router = useRouter();
 
@@ -28,23 +28,28 @@ const Upload = () => {
     const selectedFile = e.target.files[0];
     const fileTypes = ['video/mp4', 'video/webm', 'video/ogg'];
 
-    if(fileTypes.includes(selectedFile.type)) {
-      client.assets.upload('file', selectedFile, {
-        contentType: selectedFile.type,
-        filename: selectedFile.name
-      })
-      .then((data) => {
-        setVideoAsset(data);
-        setIsLoading(false);
-      })
+    // uploading asset to sanity
+    if (fileTypes.includes(selectedFile.type)) {
+      setWrongFileType(false);
+      setLoading(true);
+
+      client.assets
+        .upload('file', selectedFile, {
+          contentType: selectedFile.type,
+          filename: selectedFile.name,
+        })
+        .then((data) => {
+          setVideoAsset(data);
+          setLoading(false);
+        });
     } else {
-      setIsLoading(false);
+      setLoading(false);
       setWrongFileType(true);
     }
-  }
+  };
 
   const handlePost = async () => {
-    if(caption && videoAsset?._id && category) {
+    if(caption && videoAsset?._id && topic) {
       setSavingPost(true);
 
       const document = {
@@ -62,8 +67,8 @@ const Upload = () => {
           _type: 'postedBy',
           _ref: userProfile?._id
         },
-        topic: category
-      }
+        topic,
+      };
 
       await axios.post(`${BASE_URL}/api/post`, document);
 
@@ -75,7 +80,7 @@ const Upload = () => {
     setSavingPost(false);
     setVideoAsset(undefined);
     setCaption('');
-    setCategory('');
+    setTopic('');
   };
 
   return (
@@ -87,7 +92,7 @@ const Upload = () => {
             <p className="text-md text-gray-400 mt-1">Post a video to your account</p>
           </div>
           <div className="border-dashed rounded-xl border-4 border-gray-200 flex flex-col justify-center items-center  outline-none mt-10 w-[260px] h-[458px] p-10 cursor-pointer hover:border-red-300 hover:bg-gray-100">
-            {isLoading ? (
+            {loading ? (
               <p>Uploading...</p>
             ): (
               <div>
@@ -150,16 +155,16 @@ const Upload = () => {
             />
             <label className="text-md font-medium">Choose a Category</label>
             <select
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) => setTopic(e.target.value)}
               className="outline-none border-2 border-gray-200 text-md capitalize lg:p-4 p-2 rounded cursor-pointer"
             >
-              {topics.map((topic) => (
+              {topics.map((item) => (
                 <option
-                  key={topic.name}
+                  key={item.name}
                   className="outline-none capitalize bg-white text-gray-700 text-md p-2 hover:bg-slate-300"
-                  value={topic.name}
+                  value={item.name}
                 >
-                  {topic.name}
+                  {item.name}
                 </option>
               ))}
             </select>
